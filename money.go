@@ -146,110 +146,17 @@ func (m *Money) SubDollarInt(d int) *Money {
 	return m
 }
 
-// MulStr
-// @Description: MulStr multiplies the Money instance by a string amount.
-// @Param str
-func (m *Money) MulStr(str string) *Money {
-	// validate input
-	if !isValidStrAmount(str) {
-		panic(ErrInvalidAmountStr)
-	}
-	// parse
-	amount, err := parseStrToCentsInt(str)
-	if err != nil {
-		panic(err)
-	}
-	// mul
-	m.amountCents *= amount
-	// return
-	return m
-}
-
-// Mul
-// @Description: Mul multiplies the Money instance by a Money instance.
-// @Param money
-func (m *Money) Mul(money *Money) *Money {
-	// mul
-	m.amountCents *= money.amountCents
-	// return
-	return m
-}
-
-// MulCentsInt
-// @Description: MulCentsInt multiplies the Money instance by a cents int.
-// @Param c
-func (m *Money) MulCentsInt(c int) *Money {
-	// mul
-	m.amountCents *= int64(c)
-	// return
-	return m
-}
-
-// MulDollarInt
-// @Description: MulDollarInt multiplies the Money instance by a dollar int.
-// @Param d
-func (m *Money) MulDollarInt(d int) *Money {
-	// mul
-	m.amountCents *= int64(d * 100)
-	// return
-	return m
-}
-
-// DivStr
-// @Description: DivStr divides the Money instance by a string amount.
-// @Param str
-func (m *Money) DivStr(str string) *Money {
-	// validate input
-	if !isValidStrAmount(str) {
-		panic(ErrInvalidAmountStr)
-	}
-	// parse
-	amount, err := parseStrToCentsInt(str)
-	if err != nil {
-		panic(err)
-	}
-	// div
-	m.amountCents /= amount
-	// return
-	return m
-}
-
-// Div
-// @Description: Div divides the Money instance by a Money instance.
-// @Param money
-func (m *Money) Div(money *Money) *Money {
-	// div
-	m.amountCents /= money.amountCents
-	// return
-	return m
-}
-
-// DivCentsInt
-// @Description: DivCentsInt divides the Money instance by a cents int.
-// @Param c
-func (m *Money) DivCentsInt(c int) *Money {
-	// div
-	m.amountCents /= int64(c)
-	// return
-	return m
-}
-
-// DivDollarInt
-// @Description: DivDollarInt divides the Money instance by a dollar int.
-// @Param d
-func (m *Money) DivDollarInt(d int) *Money {
-	// div
-	m.amountCents /= int64(d * 100)
-	// return
-	return m
-}
-
 func (m *Money) ToString() string {
 	defer releaseMoney(m)
 	return fmt.Sprintf("%.2f", float64(m.amountCents)/100)
 }
 
+func (m *Money) ToStringCurrency() string {
+	defer releaseMoney(m)
+	return fmt.Sprintf("%s %.2f", m.currency, float64(m.amountCents)/100)
+}
 func (m *Money) ToCentsInt() int64 {
 	defer releaseMoney(m)
-	return m.amountCents
+	result := m.amountCents
+	return result
 }
