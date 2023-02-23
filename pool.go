@@ -4,15 +4,15 @@ import "sync"
 
 var moneySyncPool = sync.Pool{
 	New: func() interface{} {
-		return new(money)
+		return new(Money)
 	},
 }
 
-func acquireMoney() *money {
-	return moneySyncPool.Get().(*money)
+func acquireMoney() *Money {
+	return moneySyncPool.Get().(*Money)
 }
 
-func releaseMoney(m *money) {
+func releaseMoney(m *Money) {
 	m.amountCents = 0
 	m.currency = USD
 	moneySyncPool.Put(m)

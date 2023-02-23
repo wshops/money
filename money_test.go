@@ -32,6 +32,7 @@ func TestIsValidAmountStr(t *testing.T) {
 		"as.",
 		"a.s",
 		".asd",
+		"98.9999",
 	}
 	for _, input := range invalidInputs {
 		allowed := isValidStrAmount(input)

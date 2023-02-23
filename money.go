@@ -5,8 +5,7 @@ import (
 	"fmt"
 )
 
-type Money *money
-type money struct {
+type Money struct {
 	amountCents int64
 	currency    Currency
 }
@@ -15,7 +14,7 @@ type money struct {
 // @Description: NewFromString creates a new Money instance from a string.
 // @Param amount
 // @Param currency
-func NewFromString(amount string, currency ...Currency) (Money, error) {
+func NewFromString(amount string, currency ...Currency) (*Money, error) {
 	// validate input
 	if !isValidStrAmount(amount) {
 		return nil, errors.New(ErrInvalidAmountStr)
@@ -41,7 +40,7 @@ func NewFromString(amount string, currency ...Currency) (Money, error) {
 // @Description: MustFromString is a helper function that wraps NewFromString and panics if an error is returned.
 // @Param amount
 // @Param currency
-func MustFromString(amount string, currency ...Currency) Money {
+func MustFromString(amount string, currency ...Currency) *Money {
 	m, err := NewFromString(amount, currency...)
 	if err != nil {
 		panic(err)
@@ -52,7 +51,7 @@ func MustFromString(amount string, currency ...Currency) Money {
 // AddStr
 // @Description: AddStr adds a string amount to the Money instance.
 // @Param str
-func (m *money) AddStr(str string) Money {
+func (m *Money) AddStr(str string) *Money {
 	// validate input
 	if !isValidStrAmount(str) {
 		panic(ErrInvalidAmountStr)
@@ -71,7 +70,7 @@ func (m *money) AddStr(str string) Money {
 // Add
 // @Description: Add adds a Money instance to the Money instance.
 // @Param money
-func (m *money) Add(money Money) Money {
+func (m *Money) Add(money *Money) *Money {
 	// add
 	m.amountCents += money.amountCents
 	// return
@@ -81,7 +80,7 @@ func (m *money) Add(money Money) Money {
 // AddCentsInt
 // @Description: AddCentsInt adds a cents int to the Money instance.
 // @Param c
-func (m *money) AddCentsInt(c int) Money {
+func (m *Money) AddCentsInt(c int) *Money {
 	// add
 	m.amountCents += int64(c)
 	// return
@@ -91,7 +90,7 @@ func (m *money) AddCentsInt(c int) Money {
 // AddDollarInt
 // @Description: AddDollarInt adds a dollar int to the Money instance.
 // @Param d
-func (m *money) AddDollarInt(d int) Money {
+func (m *Money) AddDollarInt(d int) *Money {
 	// add
 	m.amountCents += int64(d * 100)
 	// return
@@ -101,7 +100,7 @@ func (m *money) AddDollarInt(d int) Money {
 // SubStr
 // @Description: SubStr subtracts a string amount from the Money instance.
 // @Param str
-func (m *money) SubStr(str string) Money {
+func (m *Money) SubStr(str string) *Money {
 	// validate input
 	if !isValidStrAmount(str) {
 		panic(ErrInvalidAmountStr)
@@ -120,7 +119,7 @@ func (m *money) SubStr(str string) Money {
 // Sub
 // @Description: Sub subtracts a Money instance from the Money instance.
 // @Param money
-func (m *money) Sub(money Money) Money {
+func (m *Money) Sub(money *Money) *Money {
 	// sub
 	m.amountCents -= money.amountCents
 	// return
@@ -130,7 +129,7 @@ func (m *money) Sub(money Money) Money {
 // SubCentsInt
 // @Description: SubCentsInt subtracts a cents int from the Money instance.
 // @Param c
-func (m *money) SubCentsInt(c int) Money {
+func (m *Money) SubCentsInt(c int) *Money {
 	// sub
 	m.amountCents -= int64(c)
 	// return
@@ -140,7 +139,7 @@ func (m *money) SubCentsInt(c int) Money {
 // SubDollarInt
 // @Description: SubDollarInt subtracts a dollar int from the Money instance.
 // @Param d
-func (m *money) SubDollarInt(d int) Money {
+func (m *Money) SubDollarInt(d int) *Money {
 	// sub
 	m.amountCents -= int64(d * 100)
 	// return
@@ -150,7 +149,7 @@ func (m *money) SubDollarInt(d int) Money {
 // MulStr
 // @Description: MulStr multiplies the Money instance by a string amount.
 // @Param str
-func (m *money) MulStr(str string) Money {
+func (m *Money) MulStr(str string) *Money {
 	// validate input
 	if !isValidStrAmount(str) {
 		panic(ErrInvalidAmountStr)
@@ -169,7 +168,7 @@ func (m *money) MulStr(str string) Money {
 // Mul
 // @Description: Mul multiplies the Money instance by a Money instance.
 // @Param money
-func (m *money) Mul(money Money) Money {
+func (m *Money) Mul(money *Money) *Money {
 	// mul
 	m.amountCents *= money.amountCents
 	// return
@@ -179,7 +178,7 @@ func (m *money) Mul(money Money) Money {
 // MulCentsInt
 // @Description: MulCentsInt multiplies the Money instance by a cents int.
 // @Param c
-func (m *money) MulCentsInt(c int) Money {
+func (m *Money) MulCentsInt(c int) *Money {
 	// mul
 	m.amountCents *= int64(c)
 	// return
@@ -189,7 +188,7 @@ func (m *money) MulCentsInt(c int) Money {
 // MulDollarInt
 // @Description: MulDollarInt multiplies the Money instance by a dollar int.
 // @Param d
-func (m *money) MulDollarInt(d int) Money {
+func (m *Money) MulDollarInt(d int) *Money {
 	// mul
 	m.amountCents *= int64(d * 100)
 	// return
@@ -199,7 +198,7 @@ func (m *money) MulDollarInt(d int) Money {
 // DivStr
 // @Description: DivStr divides the Money instance by a string amount.
 // @Param str
-func (m *money) DivStr(str string) Money {
+func (m *Money) DivStr(str string) *Money {
 	// validate input
 	if !isValidStrAmount(str) {
 		panic(ErrInvalidAmountStr)
@@ -218,7 +217,7 @@ func (m *money) DivStr(str string) Money {
 // Div
 // @Description: Div divides the Money instance by a Money instance.
 // @Param money
-func (m *money) Div(money Money) Money {
+func (m *Money) Div(money *Money) *Money {
 	// div
 	m.amountCents /= money.amountCents
 	// return
@@ -228,7 +227,7 @@ func (m *money) Div(money Money) Money {
 // DivCentsInt
 // @Description: DivCentsInt divides the Money instance by a cents int.
 // @Param c
-func (m *money) DivCentsInt(c int) Money {
+func (m *Money) DivCentsInt(c int) *Money {
 	// div
 	m.amountCents /= int64(c)
 	// return
@@ -238,19 +237,19 @@ func (m *money) DivCentsInt(c int) Money {
 // DivDollarInt
 // @Description: DivDollarInt divides the Money instance by a dollar int.
 // @Param d
-func (m *money) DivDollarInt(d int) Money {
+func (m *Money) DivDollarInt(d int) *Money {
 	// div
 	m.amountCents /= int64(d * 100)
 	// return
 	return m
 }
 
-func (m *money) ToString() string {
+func (m *Money) ToString() string {
 	defer releaseMoney(m)
 	return fmt.Sprintf("%.2f", float64(m.amountCents)/100)
 }
 
-func (m *money) ToCentsInt() int64 {
+func (m *Money) ToCentsInt() int64 {
 	defer releaseMoney(m)
 	return m.amountCents
 }

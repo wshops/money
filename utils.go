@@ -8,6 +8,7 @@ import (
 
 func isValidStrAmount(s string) bool {
 	dotCount := 0
+	ddigitCount := 0
 	// check empty or blank string
 	if len(s) == 0 || s == " " || s == "" {
 		return false
@@ -27,6 +28,15 @@ func isValidStrAmount(s string) bool {
 		// check if there is a non-digit character
 		if s[i] != '.' && (s[i] < '0' || s[i] > '9') {
 			return false
+		}
+
+		if dotCount == 1 {
+			ddigitCount++
+			// check if there are more than 2 digits after the dot
+			// larger than 3, because the dot is counted as well
+			if ddigitCount > 3 {
+				return false
+			}
 		}
 	}
 	return true
