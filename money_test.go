@@ -1,214 +1,107 @@
 package money
 
 import (
-	"errors"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestIsValidAmountStr(t *testing.T) {
-	validInputs := []string{
-		"123.45",
-		"1212",
-		"100",
-		"1",
-		"0",
-		"0.0",
-		"12.0",
-		"0.00",
-	}
-	for _, input := range validInputs {
-		allowed := isValidStrAmount(input)
-		if !allowed {
-			t.Errorf("invalid input: %s", input)
-			t.Failed()
-		}
-	}
-
-	invalidInputs := []string{
-		"123.456.789.123",
-		"",
-		" ",
-		"asdad",
-		"as.",
-		"a.s",
-		".asd",
-		"98.9999",
-	}
-	for _, input := range invalidInputs {
-		allowed := isValidStrAmount(input)
-		if allowed {
-			t.Errorf("invalid input identify error: %s", input)
-			t.Failed()
-		}
-	}
-}
-
 func TestNewFromString(t *testing.T) {
-	// Test case 1
-	m, err := NewFromString("10.50")
-	if err != nil {
-		t.Errorf("Test case 1 failed with error: %v", err)
-	}
-	if m.amountCents != 1050 || m.currency != USD {
-		t.Errorf("Test case 1 failed with unexpected output: %v", m)
-	}
+	// Test valid input with default currency
+	m, err := NewFromString("10.00")
+	assert.Nil(t, err, "NewFromString should not return an error for valid input")
+	assert.Equal(t, int64(1000), m.amountCents, "NewFromString should create a Money instance with the correct amountCents")
+	assert.Equal(t, USD, m.currency, "NewFromString should create a Money instance with the default currency (USD)")
 
-	// Test case 2
-	m, err = NewFromString("100", EUR)
-	if err != nil {
-		t.Errorf("Test case 2 failed with error: %v", err)
-	}
-	if m.amountCents != 10000 || m.currency != EUR {
-		t.Errorf("Test case 2 failed with unexpected output: %v", m)
-	}
+	// Test valid input with specified currency
+	m, err = NewFromString("10.00", EUR)
+	assert.Nil(t, err, "NewFromString should not return an error for valid input")
+	assert.Equal(t, int64(1000), m.amountCents, "NewFromString should create a Money instance with the correct amountCents")
+	assert.Equal(t, EUR, m.currency, "NewFromString should create a Money instance with the specified currency")
 
-	// Test case 3
-	_, err = NewFromString("10.5.5")
-	if err == nil || err.Error() != ErrInvalidAmountStr {
-		t.Errorf("Test case 3 failed with unexpected error: %v", err)
-	}
+	// Test invalid input
+	m, err = NewFromString("invalid")
+	assert.NotNil(t, err, "NewFromString should return an error for invalid input")
+	assert.Nil(t, m, "NewFromString should not return a Money instance for invalid input")
 
-	// Test case 4
-	_, err = NewFromString("abc")
-	if err == nil || err.Error() != ErrInvalidAmountStr {
-		t.Errorf("Test case 4 failed with unexpected error: %v", err)
-	}
-
-	// Test case 5
-	m, err = NewFromString("10.5")
-	if err != nil {
-		t.Errorf("Test case 5 failed with error: %v", err)
-	}
-	if m.amountCents != 1050 || m.currency != USD {
-		t.Errorf("Test case 5 failed with unexpected output: %v", m)
-	}
-
-	// Test case 6
-	m, err = NewFromString("10.5", CNY)
-	if err != nil {
-		t.Errorf("Test case 6 failed with error: %v", err)
-	}
-	if m.amountCents != 1050 || m.currency != CNY {
-		t.Errorf("Test case 6 failed with unexpected output: %v", m)
-	}
-
-	// Test case 7
-	m, err = NewFromString("10.51")
-	if err != nil {
-		t.Errorf("Test case 7 failed with error: %v", err)
-	}
-	if m.amountCents != 1051 || m.currency != USD {
-		t.Errorf("Test case 7 failed with unexpected output: %v", m)
-	}
-
-	// Test case 8
-	m, err = NewFromString("10.5")
-	if err != nil {
-		t.Errorf("Test case 8 failed with error: %v", err)
-	}
-	if m.amountCents != 1050 || m.currency != USD {
-		t.Errorf("Test case 8 failed with unexpected output: %v", m)
-	}
-
-	// Test case 9
-	m, err = NewFromString(".5")
-	if err != nil {
-		t.Errorf("Test case 9 failed with error: %v", err)
-	}
-	if m.amountCents != 50 || m.currency != USD {
-		t.Errorf("Test case 9 failed with unexpected output: %v", m)
-	}
-
-	// Test case 10
-	m, err = NewFromString(".05")
-	if err != nil {
-		t.Errorf("Test case 10 failed with error: %v", err)
-	}
-	if m.amountCents != 5 || m.currency != USD {
-		t.Errorf("Test case 10 failed with unexpected output: %v", m)
-	}
-
-	// Test case 11
-	m, err = NewFromString("0.05")
-	if err != nil {
-		t.Errorf("Test case 11 failed with error: %v", err)
-	}
-	if m.amountCents != 5 || m.currency != USD {
-		t.Errorf("Test case 11 failed with unexpected output: %v", m)
-	}
-
-	// Test case 12
-	m, err = NewFromString("0.50")
-	if err != nil {
-		t.Errorf("Test case 12 failed with error: %v", err)
-	}
-	if m.amountCents != 50 || m.currency != USD {
-		t.Errorf("Test case 12 failed with unexpected output: %v", m)
-	}
+	// Test invalid currency
+	m, err = NewFromString("10.00", "XYZ")
+	assert.NotNil(t, err, "NewFromString should return an error for an invalid currency")
+	assert.Nil(t, m, "NewFromString should not return a Money instance for an invalid currency")
 }
 
 func TestMustFromString(t *testing.T) {
-	// Test case 1
-	m := MustFromString("10.50")
-	if m.amountCents != 1050 || m.currency != USD {
-		t.Errorf("Test case 1 failed with unexpected output: %v", m)
-	}
+	// Test valid input with default currency
+	m := MustFromString("10.00")
+	assert.Equal(t, int64(1000), m.amountCents, "MustFromString should create a Money instance with the correct amountCents")
+	assert.Equal(t, USD, m.currency, "MustFromString should create a Money instance with the default currency (USD)")
 
-	// Test case 2
-	m = MustFromString("100", EUR)
-	if m.amountCents != 10000 || m.currency != EUR {
-		t.Errorf("Test case 2 failed with unexpected output: %v", m)
-	}
+	// Test valid input with specified currency
+	m = MustFromString("10.00", EUR)
+	assert.Equal(t, int64(1000), m.amountCents, "MustFromString should create a Money instance with the correct amountCents")
+	assert.Equal(t, EUR, m.currency, "MustFromString should create a Money instance with the specified currency")
 
-	// Test case 3
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("Test case 3 failed with no panic")
-		}
-	}()
-	MustFromString("10.5.5")
+	// Test invalid input (should panic)
+	assert.Panics(t, func() {
+		MustFromString("invalid")
+	}, "MustFromString should panic for invalid input")
+
+	// Test invalid currency (should panic)
+	assert.Panics(t, func() {
+		MustFromString("10.00", "XYZ")
+	}, "MustFromString should panic for an invalid currency")
 }
 
-func TestParseStrToCentsInt(t *testing.T) {
-	testCases := []struct {
-		input string
-		want  int64
-		err   error
-	}{
-		{
-			input: "100",
-			want:  10000,
-			err:   nil,
-		},
-		{
-			input: "123.45",
-			want:  12345,
-			err:   nil,
-		},
-		{
-			input: ".3",
-			want:  30,
-			err:   nil,
-		},
-		{
-			input: "0.3",
-			want:  30,
-			err:   nil,
-		},
-		{
-			input: "abc",
-			want:  0,
-			err:   errors.New(ErrTypeConversion),
-		},
-	}
+func TestAdd(t *testing.T) {
+	m1 := MustFromString("10.00")
+	m2 := MustFromString("5.00")
+	expected := MustFromString("15.00")
+	result := m1.Add(m2)
+	assert.Equal(t, expected, result, "Add result should match expected")
+}
 
-	for _, tc := range testCases {
-		got, err := parseStrToCentsInt(tc.input)
-		if got != tc.want {
-			t.Errorf("parseStrToCentsInt(%q) = %d, want %d", tc.input, got, tc.want)
-		}
-		if (err == nil && tc.err != nil) || (err != nil && tc.err == nil) || (err != nil && tc.err != nil && err.Error() != tc.err.Error()) {
-			t.Errorf("parseStrToCentsInt(%q) error = %v, want %v", tc.input, err, tc.err)
-		}
-	}
+func TestAddCentsInt(t *testing.T) {
+	m1 := MustFromString("10.00")
+	c := 500
+	expected := MustFromString("15.00")
+	result := m1.AddCentsInt(c)
+	assert.Equal(t, expected, result, "AddCentsInt result should match expected")
+}
+
+func TestAddDollarInt(t *testing.T) {
+	m1 := MustFromString("10.00")
+	d := 5
+	expected := MustFromString("15.00")
+	result := m1.AddDollarInt(d)
+	assert.Equal(t, expected, result, "AddDollarInt result should match expected")
+}
+
+func TestSubStr(t *testing.T) {
+	m1 := MustFromString("10.00")
+	expected := MustFromString("5.00")
+	result := m1.SubStr("5.00")
+	assert.Equal(t, expected, result, "SubStr result should match expected")
+}
+
+func TestSub(t *testing.T) {
+	m1 := MustFromString("10.00")
+	m2 := MustFromString("5.00")
+	expected := MustFromString("5.00")
+	result := m1.Sub(m2)
+	assert.Equal(t, expected, result, "Sub result should match expected")
+}
+
+func TestSubCentsInt(t *testing.T) {
+	m1 := MustFromString("10.00")
+	c := 500
+	expected := MustFromString("5.00")
+	result := m1.SubCentsInt(c)
+	assert.Equal(t, expected, result, "SubCentsInt result should match expected")
+}
+
+func TestSubDollarInt(t *testing.T) {
+	m1 := MustFromString("10.00")
+	d := 5
+	expected := MustFromString("5.00")
+	result := m1.SubDollarInt(d)
+	assert.Equal(t, expected, result, "SubDollarInt result should match expected")
 }

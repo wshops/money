@@ -13,7 +13,8 @@ type Money struct {
 const (
 	ErrInvalidAmountStr = "invalid amount string"
 	ErrTypeConversion   = "type conversion error"
-	ErrInvalidMoney     = "invalid money instance"
+
+	ErrInvalidCurrency = "invalid currency"
 )
 
 type Currency string
@@ -37,6 +38,9 @@ func NewFromString(amount string, currency ...Currency) (*Money, error) {
 	m := acquireMoney()
 	// currency
 	if len(currency) > 0 {
+		if !isValidCurrency(string(currency[0])) {
+			return nil, errors.New(ErrInvalidCurrency)
+		}
 		m.currency = currency[0]
 	} else {
 		m.currency = USD

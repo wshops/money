@@ -84,3 +84,12 @@ func parseStrToCentsInt(s string) (int64, error) {
 	// calculate amount in cents
 	return dolPart*100 + decPart, nil
 }
+
+func isValidCurrency(currency string) bool {
+	switch currency {
+	case "USD", "EUR", "CNY":
+		return true
+	default:
+		return false
+	}
+}
