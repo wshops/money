@@ -64,3 +64,19 @@ func BenchmarkMustFromStringNoDecimal(b *testing.B) {
 		MustFromString("10")
 	}
 }
+
+func BenchmarkParseStrToCentsInt(b *testing.B) {
+	inputs := []string{
+		"100",
+		"123.45",
+		".3",
+		"0.3",
+		"123456789.01",
+	}
+
+	for i := 0; i < b.N; i++ {
+		for _, input := range inputs {
+			parseStrToCentsInt(input)
+		}
+	}
+}

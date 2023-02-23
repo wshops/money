@@ -1,6 +1,7 @@
 package money
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -47,7 +48,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 1 failed with error: %v", err)
 	}
-	if m.AmountCents != 1050 || m.Currency != USD {
+	if m.amountCents != 1050 || m.currency != USD {
 		t.Errorf("Test case 1 failed with unexpected output: %v", m)
 	}
 
@@ -56,7 +57,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 2 failed with error: %v", err)
 	}
-	if m.AmountCents != 10000 || m.Currency != EUR {
+	if m.amountCents != 10000 || m.currency != EUR {
 		t.Errorf("Test case 2 failed with unexpected output: %v", m)
 	}
 
@@ -77,7 +78,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 5 failed with error: %v", err)
 	}
-	if m.AmountCents != 1050 || m.Currency != USD {
+	if m.amountCents != 1050 || m.currency != USD {
 		t.Errorf("Test case 5 failed with unexpected output: %v", m)
 	}
 
@@ -86,7 +87,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 6 failed with error: %v", err)
 	}
-	if m.AmountCents != 1050 || m.Currency != CNY {
+	if m.amountCents != 1050 || m.currency != CNY {
 		t.Errorf("Test case 6 failed with unexpected output: %v", m)
 	}
 
@@ -95,7 +96,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 7 failed with error: %v", err)
 	}
-	if m.AmountCents != 1051 || m.Currency != USD {
+	if m.amountCents != 1051 || m.currency != USD {
 		t.Errorf("Test case 7 failed with unexpected output: %v", m)
 	}
 
@@ -104,7 +105,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 8 failed with error: %v", err)
 	}
-	if m.AmountCents != 1050 || m.Currency != USD {
+	if m.amountCents != 1050 || m.currency != USD {
 		t.Errorf("Test case 8 failed with unexpected output: %v", m)
 	}
 
@@ -113,7 +114,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 9 failed with error: %v", err)
 	}
-	if m.AmountCents != 50 || m.Currency != USD {
+	if m.amountCents != 50 || m.currency != USD {
 		t.Errorf("Test case 9 failed with unexpected output: %v", m)
 	}
 
@@ -122,7 +123,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 10 failed with error: %v", err)
 	}
-	if m.AmountCents != 5 || m.Currency != USD {
+	if m.amountCents != 5 || m.currency != USD {
 		t.Errorf("Test case 10 failed with unexpected output: %v", m)
 	}
 
@@ -131,7 +132,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 11 failed with error: %v", err)
 	}
-	if m.AmountCents != 5 || m.Currency != USD {
+	if m.amountCents != 5 || m.currency != USD {
 		t.Errorf("Test case 11 failed with unexpected output: %v", m)
 	}
 
@@ -140,7 +141,7 @@ func TestNewFromString(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test case 12 failed with error: %v", err)
 	}
-	if m.AmountCents != 50 || m.Currency != USD {
+	if m.amountCents != 50 || m.currency != USD {
 		t.Errorf("Test case 12 failed with unexpected output: %v", m)
 	}
 }
@@ -148,13 +149,13 @@ func TestNewFromString(t *testing.T) {
 func TestMustFromString(t *testing.T) {
 	// Test case 1
 	m := MustFromString("10.50")
-	if m.AmountCents != 1050 || m.Currency != USD {
+	if m.amountCents != 1050 || m.currency != USD {
 		t.Errorf("Test case 1 failed with unexpected output: %v", m)
 	}
 
 	// Test case 2
 	m = MustFromString("100", EUR)
-	if m.AmountCents != 10000 || m.Currency != EUR {
+	if m.amountCents != 10000 || m.currency != EUR {
 		t.Errorf("Test case 2 failed with unexpected output: %v", m)
 	}
 
@@ -165,4 +166,48 @@ func TestMustFromString(t *testing.T) {
 		}
 	}()
 	MustFromString("10.5.5")
+}
+
+func TestParseStrToCentsInt(t *testing.T) {
+	testCases := []struct {
+		input string
+		want  int64
+		err   error
+	}{
+		{
+			input: "100",
+			want:  10000,
+			err:   nil,
+		},
+		{
+			input: "123.45",
+			want:  12345,
+			err:   nil,
+		},
+		{
+			input: ".3",
+			want:  30,
+			err:   nil,
+		},
+		{
+			input: "0.3",
+			want:  30,
+			err:   nil,
+		},
+		{
+			input: "abc",
+			want:  0,
+			err:   errors.New(ErrTypeConversion),
+		},
+	}
+
+	for _, tc := range testCases {
+		got, err := parseStrToCentsInt(tc.input)
+		if got != tc.want {
+			t.Errorf("parseStrToCentsInt(%q) = %d, want %d", tc.input, got, tc.want)
+		}
+		if (err == nil && tc.err != nil) || (err != nil && tc.err == nil) || (err != nil && tc.err != nil && err.Error() != tc.err.Error()) {
+			t.Errorf("parseStrToCentsInt(%q) error = %v, want %v", tc.input, err, tc.err)
+		}
+	}
 }

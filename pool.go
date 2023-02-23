@@ -13,7 +13,7 @@ func acquireMoney() *money {
 }
 
 func releaseMoney(m *money) {
-	m.AmountCents = 0
-	m.Currency = USD
+	m.amountCents = 0
+	m.currency = USD
 	moneySyncPool.Put(m)
 }
