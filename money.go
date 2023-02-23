@@ -164,6 +164,22 @@ func (m *Money) SubDollarInt(d int) *Money {
 	return m
 }
 
+// Mul
+// @Description: Mul multiplies the total amount by a number.
+// @Param n
+func (m *Money) Mul(n int) *Money {
+	m.amountCents *= int64(n)
+	return m
+}
+
+// Div
+// @Description: Div divides the total amount by a number.
+// @Param n
+func (m *Money) Div(n int) *Money {
+	m.amountCents /= int64(n)
+	return m
+}
+
 func (m *Money) ToString() string {
 	defer releaseMoney(m)
 	return fmt.Sprintf("%.2f", float64(m.amountCents)/100)

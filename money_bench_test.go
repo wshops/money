@@ -156,3 +156,29 @@ func BenchmarkToCentsInt(b *testing.B) {
 		m.ToCentsInt()
 	}
 }
+
+func BenchmarkMul(b *testing.B) {
+	// Create a Money instance to multiply
+	m := MustFromString("10.00")
+
+	// Reset the benchmark timer
+	b.ResetTimer()
+
+	// Multiply the Money instance by a number repeatedly
+	for i := 0; i < b.N; i++ {
+		m.Mul(2)
+	}
+}
+
+func BenchmarkDiv(b *testing.B) {
+	// Create a Money instance to divide
+	m := MustFromString("10.00")
+
+	// Reset the benchmark timer
+	b.ResetTimer()
+
+	// Divide the Money instance by a number repeatedly
+	for i := 0; i < b.N; i++ {
+		m.Div(2)
+	}
+}

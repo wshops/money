@@ -105,3 +105,29 @@ func TestSubDollarInt(t *testing.T) {
 	result := m1.SubDollarInt(d)
 	assert.Equal(t, expected, result, "SubDollarInt result should match expected")
 }
+
+func TestMul(t *testing.T) {
+	// Create a Money instance to multiply
+	m := MustFromString("10.00")
+
+	// Multiply the Money instance by a number
+	mul := m.Mul(2)
+
+	// Check that the result is as expected
+	if mul.ToCentsInt() != 2000 {
+		t.Errorf("Expected 2000 cents, got %d", mul.ToCentsInt())
+	}
+}
+
+func TestDiv(t *testing.T) {
+	// Create a Money instance to divide
+	m := MustFromString("10.00")
+
+	// Divide the Money instance by a number
+	div := m.Div(2)
+
+	// Check that the result is as expected
+	if div.ToCentsInt() != 500 {
+		t.Errorf("Expected 500 cents, got %d", div.ToCentsInt())
+	}
+}
