@@ -10,6 +10,20 @@ type Money struct {
 	currency    Currency
 }
 
+const (
+	ErrInvalidAmountStr = "invalid amount string"
+	ErrTypeConversion   = "type conversion error"
+	ErrInvalidMoney     = "invalid money instance"
+)
+
+type Currency string
+
+const (
+	USD Currency = "USD"
+	EUR Currency = "EUR"
+	CNY Currency = "CNY"
+)
+
 // NewFromString
 // @Description: NewFromString creates a new Money instance from a string.
 // @Param amount
