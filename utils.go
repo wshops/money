@@ -6,7 +6,10 @@ import (
 	"strings"
 )
 
-func isValidStrAmount(s string) bool {
+// IsValidStrAmount
+// @Description: check if the string is a valid amount (two decimal places only)
+// @Param s string
+func IsValidStrAmount(s string) bool {
 	dotCount := 0
 	ddigitCount := 0
 	// check empty or blank string

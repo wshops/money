@@ -31,7 +31,7 @@ const (
 // @Param currency
 func NewFromString(amount string, currency ...Currency) (*Money, error) {
 	// validate input
-	if !isValidStrAmount(amount) {
+	if !IsValidStrAmount(amount) {
 		return nil, errors.New(ErrInvalidAmountStr)
 	}
 	// get instance
@@ -71,7 +71,7 @@ func MustFromString(amount string, currency ...Currency) *Money {
 // @Param str
 func (m *Money) AddStr(str string) *Money {
 	// validate input
-	if !isValidStrAmount(str) {
+	if !IsValidStrAmount(str) {
 		panic(ErrInvalidAmountStr)
 	}
 	// parse
@@ -120,7 +120,7 @@ func (m *Money) AddDollarInt(d int) *Money {
 // @Param str
 func (m *Money) SubStr(str string) *Money {
 	// validate input
-	if !isValidStrAmount(str) {
+	if !IsValidStrAmount(str) {
 		panic(ErrInvalidAmountStr)
 	}
 	// parse

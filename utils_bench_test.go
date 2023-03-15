@@ -19,7 +19,7 @@ func BenchmarkIsValidStrAmount(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		for _, input := range inputs {
-			if isValidStrAmount(input) {
+			if IsValidStrAmount(input) {
 				// do nothing
 			}
 		}

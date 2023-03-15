@@ -17,7 +17,7 @@ func TestIsValidAmountStr(t *testing.T) {
 		"0.00",
 	}
 	for _, input := range validInputs {
-		allowed := isValidStrAmount(input)
+		allowed := IsValidStrAmount(input)
 		if !allowed {
 			t.Errorf("invalid input: %s", input)
 			t.Failed()
@@ -35,7 +35,7 @@ func TestIsValidAmountStr(t *testing.T) {
 		"98.9999",
 	}
 	for _, input := range invalidInputs {
-		allowed := isValidStrAmount(input)
+		allowed := IsValidStrAmount(input)
 		if allowed {
 			t.Errorf("invalid input identify error: %s", input)
 			t.Failed()
